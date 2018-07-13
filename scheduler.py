@@ -1,4 +1,4 @@
-from eventsQueue import EventsQueue, Event
+from eventsQueue import EventsQueue, Event, NoNextEventException
 from job import Job
 import sys
 from algorithm import Algorithm
@@ -12,7 +12,7 @@ class Scheduler:
         self.eventsQueue = EventsQueue()
         self.executingJob = None
     
-    def addJob(self, job:Job, time):
+    def addJob(self, job:Job, time:int):
         self.eventsQueue.addEvent(Event(job, "arrival"), time)
 
     def getNextJobToExecute(self):
@@ -30,14 +30,21 @@ class Scheduler:
         self.executingJob = nextJob
 
     def runTime(self):
-        timeToRun = self.eventsQueue.getNextEventTime() - self.time
-        self.executingJob.runTime(timeToRun)
-        self.time = self.eventsQueue.getNextEventTime()
-        eventsToTreat = self.eventsQueue.getAllEventsInTime(self.time)
+        try:
+            timeToRun = self.eventsQueue.getNextEventTime() - self.time
+            self.executingJob.runTime(timeToRun)
+            self.time = self.eventsQueue.getNextEventTime()
+            eventsToTreat = self.eventsQueue.getAllEventsInTime(self.time)
+        except NoNextEventException as e:
+            print(e.message, file = sys.stderr)
+            print("Ending execution...")
+            return
         
         for event in eventsToTreat: #updating events queue and lists of ready and suspended jobs
             if event.eventType == "arrival":
-                self.eventsQueue.addEvent(Event(event.job, "arrival"), time = self.time + event.job.period)
+                if (event.job.period != 0): #if period is equal to 0, the job is aperiodic
+                    self.eventsQueue.addEvent(Event(event.job, "arrival"), time = self.time + event.job.period) #adding next job arrival to event queue
+                
                 event.job.getReady(self.time)
                 self.readyJobs.append(self.executingJob)
                 self.readyJobs.append(event.job)

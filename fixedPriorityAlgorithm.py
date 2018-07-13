@@ -1,13 +1,14 @@
 from scheduler import Scheduler
 from algorithm import Algorithm
+import sys
 
-class RateMonotonicAlgorithm(Algorithm):
+class FixedPriorityAlgorithm(Algorithm):
     def __init__(self):
         pass
 
     def getNextJob(self, scheduler: Scheduler) -> tuple:
         if not scheduler.readyJobs:
-            print("Lista de jobs disponíveis está vazia!")
+            print("Lista de jobs disponíveis está vazia!", file = sys.stderr)
             return None,None,None
         jobToBeExecuted = scheduler.readyJobs[0]
         for job in scheduler.readyJobs[1:-1]:

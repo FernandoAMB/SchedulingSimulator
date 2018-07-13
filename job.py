@@ -1,5 +1,5 @@
 class Job:
-    def __init__(self, executionTime, deadline, period ,pid, priority = 0):
+    def __init__(self, executionTime:int, deadline:int, period:int ,pid:int, priority = 0):
         self.executionTime = executionTime
         self.deadline = deadline
         self.state = "ready"
@@ -24,7 +24,6 @@ class Job:
         self.executedTime += timeToRun
         if (self.executedTime == self.executionTime):
             self.state = "suspended"
-            return
         
         
 
