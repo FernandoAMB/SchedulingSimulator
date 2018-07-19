@@ -6,20 +6,23 @@ class Event:
         self.eventType = eventType
         self.job = job
 
+    def __str__(self):
+        return str(self.job) + "\t" + self.eventType
+
 class EventsQueue:
     def __init__(self):
         self.queue = []
     
     def addEvent(self, event:Event, time:int):
-        index = 0
-        for eventList, eventTime in self.queue:
-            if eventTime > time:
-                index = self.queue.index((eventList, eventTime))
-        self.queue.insert(index, (event, time))
+        self.queue.append((event, time))
+        self.queue.sort(key = itemgetter(1), reverse = False)
 
     def getAllEventsInTime(self, time:int) -> list:
-        events = [event for event,eventTime in self.queue and eventTime == time] #lista de todos os eventos num dado tempo
-        self.queue = sorted(list(set(self.queue) - set(events)), key = itemgetter(1)) # nova fila não tem os eventos retornados, usar set e reordenar pelo segundo valor da tupla pode valer de algo (?)
+        events = []
+        for event, EventTime in self.queue:
+            if EventTime == time:
+                events.append(event)
+                self.queue.remove((event, EventTime))
         return events
 
     def getNextEventTime(self) -> int:

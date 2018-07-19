@@ -11,7 +11,7 @@ class EdfAlgorithm(Algorithm):
             print("Lista de jobs disponíveis está vazia!", file = sys.stderr)
             return None,None,None
         jobToBeExecuted = scheduler.readyJobs[0]
-        for job in scheduler.readyJobs[1:-1]:
+        for job in scheduler.readyJobs[1:]:
             if job.getSlack(scheduler.time) > jobToBeExecuted.getSlack(scheduler.time):
                 jobToBeExecuted = job
         jobEndTime = jobToBeExecuted.executionTime - jobToBeExecuted.executedTime + scheduler.time
