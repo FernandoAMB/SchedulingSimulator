@@ -22,7 +22,9 @@ class EventsQueue:
         for event, EventTime in self.queue:
             if EventTime == time:
                 events.append(event)
-                self.queue.remove((event, EventTime))
+
+        for event in events:
+            self.queue.remove((event, time))
         return events
 
     def getNextEventTime(self) -> int:

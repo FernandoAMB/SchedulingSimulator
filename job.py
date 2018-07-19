@@ -10,7 +10,7 @@ class Job:
         self.priority = priority
 
     def __str__(self):
-        return "Job " + str(self.pid) + " deadline: " + str(self.deadline) + " executed: " +str(self.executedTime) + " execution time: " + str(self.executionTime)
+        return "Job " + str(self.pid) + "\ndeadline: " + str(self.getAbsoluteDeadline()) + "\nexecuted: " +str(self.executedTime) + "\nexecution time: " + str(self.executionTime) + "\nState: " + self.state
 
     def getSlack(self, currentTime):
         return self.getAbsoluteDeadline() - currentTime
@@ -24,7 +24,8 @@ class Job:
         return self.deadline + self.startTime
 
     def runTime(self, timeToRun):
-        self.executedTime += timeToRun
+        if (self.state != "suspended"):
+            self.executedTime += timeToRun
         if (self.executedTime == self.executionTime):
             self.state = "suspended"
 
