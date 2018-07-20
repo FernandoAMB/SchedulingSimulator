@@ -1,6 +1,7 @@
 from scheduler import Scheduler
 from algorithm import Algorithm
 import sys
+from operator import attrgetter
 
 class FixedPriorityAlgorithm(Algorithm):
     def __init__(self):
@@ -10,10 +11,7 @@ class FixedPriorityAlgorithm(Algorithm):
         if not scheduler.readyJobs:
             print("Lista de jobs disponíveis está vazia!", file = sys.stderr)
             return None,None,None
-        jobToBeExecuted = scheduler.readyJobs[0]
-        for job in scheduler.readyJobs[1:-1]:
-            if job.priority > jobToBeExecuted.priority:
-                jobToBeExecuted = job
+        jobToBeExecuted = max(scheduler.readyJobs, key = attrgetter("priority"))
         jobEndTime = jobToBeExecuted.executionTime - jobToBeExecuted.executedTime + scheduler.time
         jobDeadlineNotMet = jobToBeExecuted.getAbsoluteDeadline() < jobEndTime
         return (jobToBeExecuted, jobEndTime, jobDeadlineNotMet) #retorna o job a ser executado e o provável tempo de término do job. É tarefa do escalonador colocar na lista de eventos o evento de término (se aplicável) e o próximo evento de chegada.

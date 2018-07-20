@@ -6,12 +6,13 @@ import fixedPriorityAlgorithm
 
 
 
-def main():
-    job1 = Job(executionTime = 2, deadline = 10, period = 10, pid = 0)
-    job2 = Job(executionTime = 4, deadline = 30, period = 30, pid = 1)
-    job3 = Job(executionTime = 2, deadline = 3, period = 3, pid = 2)
 
-    sched = Scheduler(algorithm = edfAlgorithm.EdfAlgorithm())
+def main():
+    job1 = Job(executionTime = 2, deadline = 10, period = 10, pid = 0, priority = 1)
+    job2 = Job(executionTime = 4, deadline = 30, period = 30, pid = 1, priority = 0)
+    job3 = Job(executionTime = 2, deadline = 6, period = 6, pid = 2, priority = 2)
+
+    sched = Scheduler(algorithm = fixedPriorityAlgorithm.FixedPriorityAlgorithm())
 
     sched.addJob(job1, 0)
     sched.addJob(job2, 0)
