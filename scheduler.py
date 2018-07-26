@@ -1,8 +1,12 @@
 from eventsQueue import EventsQueue, Event, NoNextEventException
 import sys
+import random
 
 class Scheduler:
+
     def __init__(self, algorithm):
+        self.graph_dict = []
+        self.colors_dict = {}
         self.readyJobs = []
         self.algorithm = algorithm
         self.time = 0
@@ -12,6 +16,7 @@ class Scheduler:
     
     def addJob(self, job, time:int):
         self.eventsQueue.addEvent(Event(job, "arrival"), time)
+        self.colors_dict[str(job.pid)] = "rgb({}, {}, {})".format(random.randint(0, 235), random.randint(0, 235), random.randint(0, 235))
 
     def getNextJobToExecute(self):
             
@@ -29,6 +34,7 @@ class Scheduler:
         self.executingJob = nextJob
 
     def readyScheduler(self):
+        
         eventsToTreat = self.eventsQueue.getAllEventsInTime(0)
         self.treatEvents(eventsToTreat)
         self.time = 0
@@ -39,6 +45,7 @@ class Scheduler:
         try:
             timeToRun = self.eventsQueue.getNextEventTime() - self.time
             if self.executingJob:
+                self.graph_dict.append(dict(Task=("Job " + str(self.executingJob.pid)), Start=self.time, Finish=self.time + timeToRun, ColorId=str(self.executingJob.pid)))
                 self.executingJob.runTime(timeToRun)
             self.time += timeToRun
             eventsToTreat = self.eventsQueue.getAllEventsInTime(self.time)
@@ -56,6 +63,7 @@ class Scheduler:
         
         for event in eventsToTreat: #updating events queue and lists of ready and suspended jobs
             if event.eventType == "arrival":
+                
                 if (event.job.period != 0): #if period is equal to 0, the job is aperiodic
                     self.eventsQueue.addEvent(Event(event.job, "arrival"), time = self.time + event.job.period) #adding next job arrival to event queue
                 event.job.getReady(self.time)
@@ -69,6 +77,7 @@ class Scheduler:
                 print("arrival of job " + str(event.job.pid))
 
             elif event.eventType == "end":
+               
                 self.suspendedJobs.append(event.job)
                 
                 print("end of job " + str(event.job.pid))
