@@ -4,11 +4,12 @@ import edfAlgorithm
 import fixedPriorityAlgorithm
 import plotly.offline as py
 import plotly.figure_factory as ff
-
+import os 
 
 
 def main():
-    with open('config.txt') as f:
+    __location__ = os.path.realpath( os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    with open(os.path.join(__location__,"config.txt"), "r") as f:
         lines = f.readlines() #Lê as linhas do arquivo config.txt
 
     if lines[0].strip("\r\n") == "edf": #Verifica se a primeira linha é "edf", caso não seja, define o algoritmo como sendo o de prioridade fixa
