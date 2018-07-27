@@ -8,21 +8,26 @@ import plotly.figure_factory as ff
 
 
 def main():
-    job1 = Job(executionTime = 2, deadline = 10, period = 10, pid = 0, priority = 1)
-    job2 = Job(executionTime = 4, deadline = 30, period = 30, pid = 1, priority = 0)
-    job3 = Job(executionTime = 2, deadline = 6, period = 6, pid = 2, priority = 2)
+    with open('config.txt') as f:
+        lines = f.readlines() #Lê as linhas do arquivo config.txt
 
-    sched = Scheduler(algorithm = edfAlgorithm.EdfAlgorithm())
+    if lines[0].strip("\r\n") == "edf": #Verifica se a primeira linha é "edf", caso não seja, define o algoritmo como sendo o de prioridade fixa
+        sched = Scheduler(algorithm = edfAlgorithm.EdfAlgorithm())
+    else:
+        sched = Scheduler(algorithm = fixedPriorityAlgorithm.FixedPriorityAlgorithm())
 
-    sched.addJob(job1, 0)
-    sched.addJob(job2, 0)
-    sched.addJob(job3, 0)
+    for i in range(1,len(lines)-1): #Lê as informações dos jobs linha a linha, adicionando-os ao scheduler 
+        jobProps = [int(prop) if prop.isdigit() else prop for prop in lines[i].split(",")]
+        job = Job(executionTime = jobProps[0], deadline = jobProps[1], period = jobProps[2], pid = jobProps[3], priority = jobProps[4])
+        sched.addJob(job, 0)
 
-
-    endTime = 0
-    for event, time in sched.eventsQueue.queue:
-        if time + event.job.deadline > endTime:
-            endTime = time + event.job.deadline
+    if int(lines[len(lines)-1]) == 0: #Verifica a última linha, que define até que tempo o algoritmo vai rodar. Caso 0, calcula este tempo para que todos os jobs sejam executados
+        endTime = 0
+        for event, time in sched.eventsQueue.queue:
+            if time + event.job.deadline > endTime:
+                endTime = time + event.job.deadline
+    else:
+        endTime = int((lines[len(lines)-1]))
 
     sched.readyScheduler()
 
